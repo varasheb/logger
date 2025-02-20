@@ -1,0 +1,24 @@
+2025/02/20 18:22:46 main.go:108: [INFO] Device: DB_CONNECTION, File: N/A, Status: Database connection successful
+2025/02/20 18:22:46 main.go:96: Failed to insert log into DB: ERROR: column "error_details" of relation "fotadevicelogs" does not exist (SQLSTATE 42703)
+2025/02/20 18:22:48 main.go:108: [ERROR] Device: hello_binary, File: N/A, Status: Binary execution failed | Error details: Error: fork/exec /tmp/temp_executable_2333448532: permission denied | File: /home/varashebkanthi/backend/fotaupdate/test/main.go | Line: 165
+2025/02/20 18:22:48 main.go:96: Failed to insert log into DB: FATAL: prepared statement name is already in use (SQLSTATE 08P01)
+2025/02/20 18:22:48 main.go:108: [ERROR] Device: hello_binary, File: N/A, Status: Binary execution failed | Error details: Error: error executing binary: fork/exec /tmp/temp_executable_2333448532: permission denied | File: /home/varashebkanthi/backend/fotaupdate/test/main.go | Line: 203
+2025/02/20 18:22:48 main.go:96: Failed to insert log into DB: ERROR: column "error_details" of relation "fotadevicelogs" does not exist (SQLSTATE 42703)
+2025/02/20 18:23:35 main.go:108: [INFO] Device: DB_CONNECTION, File: N/A, Status: Database connection successful
+2025/02/20 18:23:35 main.go:96: Failed to insert log into DB: ERROR: syntax error at end of input (SQLSTATE 42601)
+2025/02/20 18:23:36 main.go:108: [ERROR] Device: hello_binary, File: N/A, Status: Binary execution failed | Error details: Error: fork/exec /tmp/temp_executable_716866140: permission denied | File: /home/varashebkanthi/backend/fotaupdate/test/main.go | Line: 165
+2025/02/20 18:23:36 main.go:96: Failed to insert log into DB: FATAL: prepared statement name is already in use (SQLSTATE 08P01)
+2025/02/20 18:23:36 main.go:108: [ERROR] Device: hello_binary, File: N/A, Status: Binary execution failed | Error details: Error: error executing binary: fork/exec /tmp/temp_executable_716866140: permission denied | File: /home/varashebkanthi/backend/fotaupdate/test/main.go | Line: 203
+2025/02/20 18:23:36 main.go:96: Failed to insert log into DB: ERROR: syntax error at end of input (SQLSTATE 42601)
+2025/02/20 18:24:38 main.go:108: [INFO] Device: DB_CONNECTION, File: N/A, Status: Database connection successful
+2025/02/20 18:24:38 main.go:96: Failed to insert log into DB: failed to encode args[0]: unable to encode 140361 into text format for text (OID 25): cannot find encode plan
+2025/02/20 18:24:39 main.go:108: [ERROR] Device: hello_binary, File: N/A, Status: Binary execution failed | Error details: Error: fork/exec /tmp/temp_executable_2268367241: permission denied | File: /home/varashebkanthi/backend/fotaupdate/test/main.go | Line: 165
+2025/02/20 18:24:39 main.go:96: Failed to insert log into DB: failed to encode args[0]: unable to encode 140361 into text format for text (OID 25): cannot find encode plan
+2025/02/20 18:24:39 main.go:108: [ERROR] Device: hello_binary, File: N/A, Status: Binary execution failed | Error details: Error: error executing binary: fork/exec /tmp/temp_executable_2268367241: permission denied | File: /home/varashebkanthi/backend/fotaupdate/test/main.go | Line: 203
+2025/02/20 18:24:39 main.go:96: Failed to insert log into DB: failed to encode args[0]: unable to encode 140361 into text format for text (OID 25): cannot find encode plan
+2025/02/20 18:26:03 main.go:108: [INFO] Device: DB_CONNECTION, File: N/A, Status: Database connection successful
+2025/02/20 18:26:04 main.go:108: [ERROR] Device: hello_binary, File: N/A, Status: Binary execution failed | Error details: Error: fork/exec /tmp/temp_executable_1312382543: permission denied | File: /home/varashebkanthi/backend/fotaupdate/test/main.go | Line: 165
+2025/02/20 18:26:04 main.go:108: [ERROR] Device: hello_binary, File: N/A, Status: Binary execution failed | Error details: Error: error executing binary: fork/exec /tmp/temp_executable_1312382543: permission denied | File: /home/varashebkanthi/backend/fotaupdate/test/main.go | Line: 203
+2025/02/20 18:27:01 main.go:108: [INFO] Device: DB_CONNECTION, File: N/A, Status: Database connection successful
+2025/02/20 18:27:02 main.go:108: [ERROR] Device: hello_binary, File: N/A, Status: Binary execution failed | Error details: Error: fork/exec /tmp/temp_executable_1808836126: permission denied | File: /home/varashebkanthi/backend/fotaupdate/test/main.go | Line: 165
+2025/02/20 18:27:02 main.go:108: [ERROR] Device: hello_binary, File: N/A, Status: Binary execution failed | Error details: Error: error executing binary: fork/exec /tmp/temp_executable_1808836126: permission denied | File: /home/varashebkanthi/backend/fotaupdate/test/main.go | Line: 203
