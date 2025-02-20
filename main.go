@@ -1,30 +1,30 @@
 package logger
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"log"
 	"os"
 	"runtime"
 
-	_ "github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 type Logger struct {
-	db        *sql.DB
+	db        *pgxpool.Pool
 	logger    *log.Logger
 	processID int
 	createdBy string
 }
 
 func InitLogger(dbURL string, logFilePath string, createdBy string) (*Logger, error) {
-	db, err := sql.Open("postgres", dbURL)
+	db, err := pgxpool.New(context.Background(), dbURL)
 	if err != nil {
 		return nil, fmt.Errorf("database connection failed: %v", err)
 	}
 
-	if pingErr := db.Ping(); pingErr != nil {
+	if pingErr := db.Ping(context.Background()); pingErr != nil {
 		return nil, fmt.Errorf("database ping failed: %v", pingErr)
 	}
 
@@ -66,7 +66,7 @@ func (l *Logger) LogToDB(deviceID, fileID, logLevel, status string, err error) {
 	query := `INSERT INTO fotadevicelogs (processid, deviceid, fileid, loglevel, status, createdby, error_details, createdat)
 			  VALUES ($1, $2, $3, $4, $5, $6, $7, EXTRACT(EPOCH FROM NOW()) * 1000)`
 
-	_, dbErr := l.db.Exec(query, l.processID, deviceID, fileID, logLevel, status, l.createdBy, errorDetails)
+	_, dbErr := l.db.Exec(context.Background(), query, l.processID, deviceID, fileID, logLevel, status, l.createdBy, errorDetails)
 	if dbErr != nil {
 		l.logger.Println("Failed to insert log into DB:", dbErr)
 	}
