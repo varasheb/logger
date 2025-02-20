@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -14,33 +15,49 @@ import (
 type Logger struct {
 	db        *pgxpool.Pool
 	logger    *log.Logger
-	processID int
+	processID string
 	createdBy string
+	schema    string
 }
 
-func InitLogger(dbURL string, logFilePath string, createdBy string) (*Logger, error) {
+func InitLogger(dbURL, logFilePath, createdBy string, schema ...string) (*Logger, error) {
+	defaultSchema := "public"
+	if len(schema) > 0 && schema[0] != "" {
+		defaultSchema = schema[0]
+	}
+
 	db, err := pgxpool.New(context.Background(), dbURL)
 	if err != nil {
 		return nil, fmt.Errorf("database connection failed: %v", err)
 	}
 
-	if pingErr := db.Ping(context.Background()); pingErr != nil {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if pingErr := db.Ping(ctx); pingErr != nil {
 		return nil, fmt.Errorf("database ping failed: %v", pingErr)
 	}
 
+	// Configure rotating file logger
 	logFile := &lumberjack.Logger{
 		Filename:   logFilePath,
-		MaxSize:    10, // MB
-		MaxBackups: 5,
-		MaxAge:     30, // Days
-		Compress:   true,
+		MaxSize:    10,   // MB
+		MaxBackups: 5,    // Number of old logs to retain
+		MaxAge:     30,   // Days
+		Compress:   true, // Enable compression
 	}
 
 	loggerInstance := log.New(logFile, "", log.LstdFlags|log.Lshortfile)
 
 	pid := os.Getpid()
 
-	return &Logger{db: db, logger: loggerInstance, processID: pid, createdBy: createdBy}, nil
+	return &Logger{
+		db:        db,
+		logger:    loggerInstance,
+		processID: fmt.Sprintf("%d", pid),
+		createdBy: createdBy,
+		schema:    defaultSchema,
+	}, nil
 }
 
 func captureStackTrace(err error) string {
@@ -52,7 +69,6 @@ func captureStackTrace(err error) string {
 	if ok {
 		return fmt.Sprintf("Error: %v | File: %s | Line: %d", err, file, line)
 	}
-
 	return fmt.Sprintf("Error: %v", err)
 }
 
@@ -63,22 +79,34 @@ func (l *Logger) LogToDB(deviceID, fileID, logLevel, status string, err error) {
 	}
 
 	errorDetails := captureStackTrace(err)
-	query := `INSERT INTO fotadevicelogs (processid, deviceid, fileid, loglevel, status, createdby, error_details, createdat)
-			  VALUES ($1, $2, $3, $4, $5, $6, $7, EXTRACT(EPOCH FROM NOW()) * 1000)`
 
-	_, dbErr := l.db.Exec(context.Background(), query, l.processID, deviceID, fileID, logLevel, status, l.createdBy, errorDetails)
+	query := fmt.Sprintf(`
+		INSERT INTO %s.fotadevicelogs (processid, deviceid, fileid, loglevel, status, createdby, errormessage)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)`, l.schema)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, dbErr := l.db.Exec(ctx, query, l.processID, deviceID, fileID, logLevel, status, l.createdBy, errorDetails)
 	if dbErr != nil {
-		l.logger.Println("Failed to insert log into DB:", dbErr)
+		l.logger.Printf("Failed to insert log into DB: %v\n", dbErr)
 	}
 }
 
 func (l *Logger) Log(deviceID, fileID, logLevel, status string, err error) {
 	logMessage := fmt.Sprintf("[%s] Device: %s, File: %s, Status: %s", logLevel, deviceID, fileID, status)
-	l.logger.Println(logMessage)
 
 	if err != nil {
 		stackTrace := captureStackTrace(err)
-		l.logger.Println("Error details:", stackTrace)
+		logMessage += fmt.Sprintf(" | Error details: %s", stackTrace)
 	}
+	l.logger.Println(logMessage)
+
 	l.LogToDB(deviceID, fileID, logLevel, status, err)
+}
+
+func (l *Logger) Close() {
+	if l.db != nil {
+		l.db.Close()
+	}
 }
