@@ -81,7 +81,7 @@ func InitLogger(dbURL, processName, createdBy, logFilePath, schema string) (*Log
 
 	// Create log table if it does not exist
 	createTableQuery := fmt.Sprintf(`
-	CREATE TABLE IF NOT EXISTS %s.fotadevicelogs (
+	CREATE TABLE IF NOT EXISTS "%s".fotadevicelogs (
 		processid TEXT NOT NULL,
 		processname TEXT NOT NULL,
 		deviceid TEXT NOT NULL,
@@ -173,7 +173,7 @@ func (l *Logger) LogToDB(deviceID, fileID, logLevel, status string, metadata int
 	}
 
 	query := fmt.Sprintf(`
-		INSERT INTO %s.fotadevicelogs (processid, processname, deviceid, fileid, loglevel, status, createdby, errormessage, metadata)
+		INSERT INTO "%s".fotadevicelogs (processid, processname, deviceid, fileid, loglevel, status, createdby, errormessage, metadata)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`, l.schema)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -216,7 +216,7 @@ func (l *Logger) Log(deviceID, fileID, logLevel, status string, metadata interfa
 
 	if err != nil {
 		stackTrace := captureStackTrace(err)
-		logMessage += fmt.Sprintf(" | Error details: %s", stackTrace)
+		logMessage += fmt.Sprintf(" | %s", stackTrace)
 	}
 	l.logger.Println(logMessage)
 
