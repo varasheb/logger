@@ -165,11 +165,15 @@ func (l *Logger) LogToDB(deviceID, fileID, logLevel, status string, metadata int
 	}
 
 	errorDetails := captureStackTrace(err)
-
-	compressedMetadata, err := json.Marshal(metadata)
-	if err != nil {
-		l.logger.Printf("Failed to compress metadata: %v\n", err)
-		return
+	var compressedMetadata []byte
+	if metadata == nil {
+		compressedMetadata = []byte("{}") // Assign an empty JSON object
+	} else {
+		compressedMetadata, err = json.Marshal(metadata)
+		if err != nil {
+			l.logger.Printf("Failed to compress metadata: %v\n", err)
+			return
+		}
 	}
 
 	query := fmt.Sprintf(`
