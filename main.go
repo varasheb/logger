@@ -1,3 +1,40 @@
+/*
+Package logger provides structured logging capabilities for applications.
+
+This package supports logging to both a database (PostgreSQL) and a rotating log file.
+It is designed to capture and store application logs efficiently, including process-specific details.
+
+### Features:
+- **Database Logging**: Logs structured data into a PostgreSQL table (`fotadevicelogs`).
+- **File-Based Logging**: Uses a rotating log file with configurable retention.
+- **Process Metadata**: Captures process ID and creator information for traceability.
+- **Schema Management**: Automatically ensures the logging table exists within a specified schema.
+- **Error Handling**: Includes stack trace capture for better debugging.
+
+### Usage:
+
+ 1. Initialize the logger:
+    ```go
+    logger, err := logger.InitLogger("postgres://user:pass@localhost/db", "ProcessName", "CreatedBy", "logs/app.log", "public")
+    if err != nil {
+    log.Fatalf("Logger initialization failed: %v", err)
+    }
+    defer logger.Close()
+
+ 2. Log messages:
+    ```go
+    logger.Log("1234567890123456", "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890", "info", "Operation successful", map[string]string{"key": "value"}, nil)
+    ```
+
+ 3. Close the logger when done:
+    ```go
+    defer logger.Close()
+    ```
+
+### Error Handling:
+- If the database connection fails, logs are written to the log file only.
+- If the log file cannot be written, logs are discarded.
+*/
 package logger
 
 import (

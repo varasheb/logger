@@ -10,32 +10,30 @@ import (
 )
 
 func testLogger() {
-	dbURL := "postgresql://testing_owner:rilHO3obSc7X@ep-weathered-credit-a1p4w5k1-pooler.ap-southeast-1.aws.neon.tech/Dmt?sslmode=require"
+	dbURL := "postgresql://logger_owner:1234567890@localhost:5432/logger"
 	logFilePath := "app.log"
 	createdBy := "TestUser"
 
-	// Initialize logger
-	loggerI, err := logger.InitLogger(dbURL, logFilePath, createdBy, "fotalogs")
+	loggerI, err := logger.InitLogger(dbURL, "rivertest", createdBy, logFilePath, "fotalogs")
 	if err != nil {
 		log.Fatalf("Failed to initialize logger: %v", err)
 	}
 	defer loggerI.Close()
 
 	// Log different severity levels
-
-	loggerI.Log("device001", "fileABC", "INFO", "System is running smoothly", nil)
+	loggerI.Log("0101FCED8C5C2AE2", "00064467DD629E36C838C3E94F20A490A96B4DB084FA300C3DD64D5D45949DE9", "INFO", "System is running smoothly", map[string]interface{}{"testmeta": "testvalue"}, nil)
 	time.Sleep(2 * time.Minute)
-	loggerI.Log("device002", "fileDEF", "WARNING", "Memory usage is high", fmt.Errorf("memory usage at 90%"))
+	loggerI.Log("0102474A083CA0EE", "00064467DD629E36C838C3E94F20A490A96B4DB084FA300C3DD64D3D45949DE9", "WARN", "Memory usage is high", nil, fmt.Errorf("memory usage at 90%"))
 	// time.Sleep(2 * time.Minute)
-	loggerI.Log("device003", "fileXYZ", "ERROR", "Database connection failed", fmt.Errorf("connection timeout"))
-	loggerI.Log("device004", "filePQR", "CRITICAL", "System crash detected", fmt.Errorf("kernel panic"))
+	loggerI.Log("0101FCED8C5C2AE2", "00064467DD629E36C838C3E94F20A490A96B4DB084FA300C3DD64D2D45949DE9", "ERROR", "Database connection failed", nil, fmt.Errorf("connection timeout"))
+	loggerI.Log("0102474A083CA0EE", "00064467DD629E36C838C3E94F20A490A96B4DB084FA300C3DD64D2D45949DE9", "DEBUG", "System crash detected", map[string]interface{}{"testmeta": "testvalue"}, fmt.Errorf("kernel panic"))
 
 	fmt.Println("Logger test completed. Check 'app.log' and database for logs.")
+	// Close the logger
+	loggerI.Close()
 }
 
 func main() {
 	fmt.Println("Process ID:", os.Getpid())
 	testLogger()
-	time.Sleep(1 * time.Second)
-
 }
