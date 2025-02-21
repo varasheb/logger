@@ -186,6 +186,44 @@ func (l *Logger) LogToDB(deviceID, fileID, logLevel, status string, metadata int
 }
 
 /*
+Log writes a log message to both the log file and the database.
+
+This function logs a structured message that includes the device ID, file ID, log level, and status.
+If an error is provided, it captures and appends a stack trace to the log message.
+It then writes the log to both the file and the database.
+
+### Parameters:
+- `deviceID` (string): Unique identifier of the device. Must be exactly 16 characters.
+- `fileID` (string): Unique identifier of the file. Must be exactly 64 characters.
+- `logLevel` (string): Log severity level. Must be one of "info", "warn", "error", or "debug".
+- `status` (string): Status message associated with the log entry.
+- `metadata` (interface{}): Additional structured data related to the log entry (can be a map, struct, etc.).
+- `err` (error): Optional error object. If provided, the function captures the error stack trace.
+
+### Behavior:
+1. Formats a log message including the provided parameters.
+2. Captures the stack trace if an error is provided.
+3. Writes the log message to the configured log file.
+4. Calls `LogToDB` to store the log entry in the database.
+
+### Example Usage:
+```go
+logger.Log("1234567890123456", "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890", "error", "Failed to process file", map[string]string{"key": "value"}, errors.New("file not found"))
+```
+*/
+func (l *Logger) Log(deviceID, fileID, logLevel, status string, metadata interface{}, err error) {
+	logMessage := fmt.Sprintf("[%s] Device: %s, File: %s, Status: %s", logLevel, deviceID, fileID, status)
+
+	if err != nil {
+		stackTrace := captureStackTrace(err)
+		logMessage += fmt.Sprintf(" | Error details: %s", stackTrace)
+	}
+	l.logger.Println(logMessage)
+
+	l.LogToDB(deviceID, fileID, logLevel, status, metadata, err)
+}
+
+/*
 Close closes the database connection.
 */
 func (l *Logger) Close() {
