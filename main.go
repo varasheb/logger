@@ -217,7 +217,7 @@ func (l *Logger) LogToDB(deviceID, fileID, logLevel, status string, metadata int
 		INSERT INTO "%s".fotadevicelogs (processid, processname, deviceid, fileid, loglevel, status, createdby, errormessage, metadata)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`, l.schema)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	_, dbErr := l.db.Exec(ctx, query, l.processID, l.processName, deviceID, fileID, logLevel, status, l.createdBy, errorDetails, compressedMetadata)
